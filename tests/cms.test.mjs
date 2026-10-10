@@ -23,3 +23,9 @@ test('all authored Markdown lives in MD except the GitHub README',()=>{
  const walk=(url,prefix='')=>{for(const item of readdirSync(url,{withFileTypes:true})){if(['node_modules','.next','.git'].includes(item.name))continue;const path=prefix+item.name;if(item.isDirectory())walk(new URL(item.name+'/',url),path+'/');else if(item.name.endsWith('.md'))found.push(path);}};
  walk(root);assert.ok(found.includes('README.md'));assert.ok(found.includes('MD/AGENTS.md'));assert.ok(found.every(path=>path==='README.md'||path.startsWith('MD/')));
 });
+test('public CMS upgrades exact legacy setup copy while preserving custom published copy',()=>{
+ const legacy={...pageDefault('pricing'),subtitle:'Plans and prices are managed directly by SESCO Super Admin.'};
+ assert.equal(publicContent('pricing',legacy).subtitle,pageDefault('pricing').subtitle);
+ const custom={...legacy,subtitle:'Plans for our partner network.'};
+ assert.equal(publicContent('pricing',custom).subtitle,custom.subtitle);
+});

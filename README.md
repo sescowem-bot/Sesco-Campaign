@@ -29,3 +29,7 @@ Run `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run t
 12 of 12 source packages are delivered. This is a release candidate requiring the pending checks in [live acceptance](MD/LIVE_ACCEPTANCE.md). Live Supabase/provider/DNS/payment acceptance, browser checks, load tests, backups, operational scheduling and deployment remain release gates. No live sends, payments or deployment are claimed. SMS and WhatsApp are unavailable. Keep email delivery disabled until configured and accepted in staging. Public legal copy remains draft material requiring the operator's review.
 
 Deployment and recovery procedures are in [deployment runbook](MD/DEPLOYMENT_RUNBOOK.md) and [backup recovery](MD/BACKUP_RECOVERY.md). `npm run check:release` validates configured environment names/roles without contacting services or printing secrets.
+
+## Starting from a fresh project
+
+See [Fresh installation](MD/FRESH_INSTALL.md). The complete database installation is `supabase/SESCO_Complete_Fresh_Install.sql`. Run it once instead of applying migrations 001 through 012 individually.

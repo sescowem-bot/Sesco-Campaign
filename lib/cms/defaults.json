@@ -150,11 +150,11 @@
   "faq": {
     "label": "HELP CENTER",
     "title": "Frequently asked questions.",
-    "subtitle": "Answers about our planned features and initial rollout.",
+    "subtitle": "Answers about accounts, company workspaces and email campaigns.",
     "sections": [
       {
         "title": "Can I use my own domain?",
-        "description": "Yes. Authorized company administrators will verify sending domains through DNS."
+        "description": "Yes. Company administrators verify sending domains through DNS before using them for campaigns."
       },
       {
         "title": "Can I create my own templates?",
@@ -170,11 +170,11 @@
       },
       {
         "title": "Can I pay to upgrade?",
-        "description": "Approved workspaces can use Paystack checkout after payment configuration. Live payment acceptance must be verified before launch."
+        "description": "Available subscriptions are managed through Billing in your company workspace. Contact our team for help choosing a plan."
       },
       {
-        "title": "Is the platform ready for live use?",
-        "description": "Core features are implemented in source. Production security and integration acceptance are still required before launch."
+        "title": "How do I access my company workspace?",
+        "description": "Create an account and verify your email. Your company administrator can then assign your account to a workspace."
       }
     ],
     "primary_label": "",
@@ -308,12 +308,12 @@
   },
   "contact": {
     "label": "CONTACT",
-    "title": "Let’s talk about your next campaign.",
-    "subtitle": "Have a question about the platform or want to hear about early access?",
+    "title": "Let\u2019s talk about your next campaign.",
+    "subtitle": "Get in touch about pricing, company access or your campaign needs.",
     "sections": [
       {
-        "title": "Connect with Sesco Studio",
-        "description": "We are building SESCO Campaign Cloud and welcome early access enquiries. A contact form will be enabled after secure submission and notification services are connected."
+        "title": "Talk to our team",
+        "description": "Ask about plans, company workspaces and getting started with your email campaigns."
       }
     ],
     "primary_label": "",
@@ -328,7 +328,7 @@
   "pricing": {
     "label": "PLANS & PRICING",
     "title": "Plans that grow with your business.",
-    "subtitle": "Plans and prices are managed directly by SESCO Super Admin.",
+    "subtitle": "Choose the right plan for your team and your audience.",
     "sections": [],
     "primary_label": "",
     "primary_href": "/pricing",
