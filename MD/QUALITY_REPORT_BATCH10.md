@@ -1,0 +1,11 @@
+# Batch 10 quality report
+
+Version 0.10.0. A clean npm ci completed. npm run lint, npm run typecheck, npm test, npm run build and npm run test:smoke passed. All 57 tests passed. Production HTTP smoke checks passed for 16 public/health routes, five protected login redirects and four API rejection checks. npm audit --omit=dev reported zero vulnerabilities.
+
+Migrations 001 through 010 applied sequentially to isolated PGlite PostgreSQL with Supabase auth/role mocks; only unavailable pgcrypto extension creation is removed in that test environment. Reporting tests verify tenant authorization, anonymous denial, Super Admin access, viewer read access, range bounds, complete totals despite pagination, empty cohorts, repeated opens, overlapping delivery/complaint outcomes and local unsubscribe attribution. Pure tests verify UTC dates, leap-year limits, rates and CSV formula neutralization/escaping. Earlier campaign, queue, provider, payment and contact tests remain intact.
+
+The report UI was server-rendered from its actual component with production CSS and synthetic data into docs/preview/report-layout.html. This is a labeled static layout fixture, not a live report or screenshot. Desktop/mobile browser visual checks and signed-in end-to-end export checks were not performed because no configured hosted session or local browser runtime was available. Responsive styles include mobile filter stacking, adaptive metric grids and keyboard-focusable scrolling tables; visual acceptance is still required.
+
+No hosted migration, actual email, provider callback, payment, external scheduler, GitHub mutation or deployment was performed. Hosted Supabase RLS acceptance, provider tracking configuration, load testing on large cohorts, backups and operational monitoring remain production release gates. Aggregate reporting is bounded to 366 days, page size 50, export maximum 1,000 rows. Large-cohort performance is not load-tested. Local unsubscribe attribution is prospective from migration 010, with no invented historical attribution.
+
+Archive integrity was checked; all Batch 9 source files are retained. Dependencies, build outputs and secrets are excluded. Setup, release notes, changed-file manifest and progress report are included.

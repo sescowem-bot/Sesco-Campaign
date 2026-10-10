@@ -1,0 +1,409 @@
+{
+  "features": {
+    "label": "FEATURES",
+    "title": "The tools behind better campaigns.",
+    "subtitle": "Everything your team needs to create, manage and understand email communication.",
+    "sections": [
+      {
+        "title": "Contact management",
+        "description": "Excel and CSV import, column mapping, lists, segments and custom fields."
+      },
+      {
+        "title": "Email template builder",
+        "description": "Design templates from scratch or customize a shared template library."
+      },
+      {
+        "title": "Company branding",
+        "description": "Add logos, colors, social links, addresses and reusable footers."
+      },
+      {
+        "title": "Verified sending domains",
+        "description": "Configure your domain using DNS records without changing Vercel hosting."
+      },
+      {
+        "title": "Approval workflows",
+        "description": "Review campaign content before it is sent."
+      },
+      {
+        "title": "Delivery reporting",
+        "description": "Track real provider events and delivery outcomes."
+      },
+      {
+        "title": "Team permissions",
+        "description": "Company administrators assign verified accounts to roles with restricted access."
+      },
+      {
+        "title": "Future channels",
+        "description": "SMS and WhatsApp planned for later phases."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "solutions": {
+    "label": "SOLUTIONS",
+    "title": "Made for how your business communicates.",
+    "subtitle": "Flexible workflows for organizations that value clarity and trust.",
+    "sections": [
+      {
+        "title": "Financial services",
+        "description": "Controlled customer updates and authorized product communication."
+      },
+      {
+        "title": "Healthcare",
+        "description": "Service announcements and privacy-aware messaging."
+      },
+      {
+        "title": "Retail",
+        "description": "Offers, launches, newsletters and customer segments."
+      },
+      {
+        "title": "Education",
+        "description": "Updates, invitations and community outreach."
+      },
+      {
+        "title": "Professional services",
+        "description": "Client onboarding and ongoing engagement."
+      },
+      {
+        "title": "Growing teams",
+        "description": "One organized workspace for communication."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "about": {
+    "label": "ABOUT",
+    "title": "Designed with purpose.",
+    "subtitle": "SESCO Campaign Cloud is a product initiative by Sesco Studio.",
+    "sections": [
+      {
+        "title": "Our mission",
+        "description": "Make professional customer communication accessible and manageable."
+      },
+      {
+        "title": "Our approach",
+        "description": "Thoughtful design paired with reliable, secure engineering."
+      },
+      {
+        "title": "Our priorities",
+        "description": "Brand control, responsible sending and transparent reporting."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "resources": {
+    "label": "RESOURCES",
+    "title": "Learn to communicate better.",
+    "subtitle": "Guidance and learning resources for the platform.",
+    "sections": [
+      {
+        "title": "Getting started",
+        "description": "How audiences, templates and campaigns work together."
+      },
+      {
+        "title": "Domain verification",
+        "description": "Understanding DNS authentication and sender identities."
+      },
+      {
+        "title": "Email design",
+        "description": "Better layouts, links, footers and mobile readability."
+      },
+      {
+        "title": "Responsible campaigns",
+        "description": "Permission, unsubscribe and suppression best practices."
+      },
+      {
+        "title": "Delivery reports",
+        "description": "How to interpret provider acceptance and delivery events."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "faq": {
+    "label": "HELP CENTER",
+    "title": "Frequently asked questions.",
+    "subtitle": "Answers about our planned features and initial rollout.",
+    "sections": [
+      {
+        "title": "Can I use my own domain?",
+        "description": "Yes. Authorized company administrators will verify sending domains through DNS."
+      },
+      {
+        "title": "Can I create my own templates?",
+        "description": "Create company templates and save reusable designs in the template studio."
+      },
+      {
+        "title": "Can I customize my email footer?",
+        "description": "Yes. Company branding, links and reusable footer templates are core features."
+      },
+      {
+        "title": "Can I send WhatsApp messages?",
+        "description": "WhatsApp is planned for a future release."
+      },
+      {
+        "title": "Can I pay to upgrade?",
+        "description": "Approved workspaces can use Paystack checkout after payment configuration. Live payment acceptance must be verified before launch."
+      },
+      {
+        "title": "Is the platform ready for live use?",
+        "description": "Core features are implemented in source. Production security and integration acceptance are still required before launch."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "privacy": {
+    "label": "POLICIES",
+    "title": "Privacy information",
+    "subtitle": "Prelaunch policy information for SESCO Campaign Cloud.",
+    "sections": [
+      {
+        "title": "Status",
+        "description": "This page is a draft and must be reviewed before production launch."
+      },
+      {
+        "title": "Information we expect to process",
+        "description": "Organization account details, authorized contact records and campaign activity."
+      },
+      {
+        "title": "Safeguards",
+        "description": "The planned platform uses organization-scoped access, role permissions and suppression controls."
+      },
+      {
+        "title": "Questions",
+        "description": "Contact the platform operator for privacy enquiries when support channels are activated."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "terms": {
+    "label": "POLICIES",
+    "title": "Terms of service",
+    "subtitle": "Prelaunch policy information for SESCO Campaign Cloud.",
+    "sections": [
+      {
+        "title": "Status",
+        "description": "Draft terms for product planning only. These are not final legal terms."
+      },
+      {
+        "title": "Accounts",
+        "description": "Organizations will be responsible for authorized account use and staff permissions."
+      },
+      {
+        "title": "Sending",
+        "description": "Campaigns must comply with applicable law and provider requirements."
+      },
+      {
+        "title": "Billing",
+        "description": "Final subscription, renewal and refund terms will be published before payments launch."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "cookies": {
+    "label": "POLICIES",
+    "title": "Cookie information",
+    "subtitle": "Prelaunch policy information for SESCO Campaign Cloud.",
+    "sections": [
+      {
+        "title": "Status",
+        "description": "Draft information pending final analytics and cookie inventory."
+      },
+      {
+        "title": "Essential storage",
+        "description": "Authentication and security may require necessary cookies."
+      },
+      {
+        "title": "Optional analytics",
+        "description": "Optional tracking, where introduced, will follow applicable notice and consent requirements."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "acceptable-use": {
+    "label": "POLICIES",
+    "title": "Acceptable use policy",
+    "subtitle": "Prelaunch policy information for SESCO Campaign Cloud.",
+    "sections": [
+      {
+        "title": "Status",
+        "description": "Draft policy pending legal review."
+      },
+      {
+        "title": "Consent",
+        "description": "Users must have a lawful basis and appropriate permission to contact recipients."
+      },
+      {
+        "title": "Prohibited activity",
+        "description": "Spam, impersonation, fraud, malicious links and unauthorized lists are not allowed."
+      },
+      {
+        "title": "Enforcement",
+        "description": "Accounts and campaigns may be reviewed, restricted or suspended for abuse."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "contact": {
+    "label": "CONTACT",
+    "title": "Let’s talk about your next campaign.",
+    "subtitle": "Have a question about the platform or want to hear about early access?",
+    "sections": [
+      {
+        "title": "Connect with Sesco Studio",
+        "description": "We are building SESCO Campaign Cloud and welcome early access enquiries. A contact form will be enabled after secure submission and notification services are connected."
+      }
+    ],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "pricing": {
+    "label": "PLANS & PRICING",
+    "title": "Plans that grow with your business.",
+    "subtitle": "Plans and prices are managed directly by SESCO Super Admin.",
+    "sections": [],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "login": {
+    "label": "ACCOUNT ACCESS",
+    "title": "Welcome back",
+    "subtitle": "Sign in securely to your campaign workspace.",
+    "sections": [],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "register": {
+    "label": "GET STARTED",
+    "title": "Create your account",
+    "subtitle": "Verify your email. Organization access is assigned separately by the platform team.",
+    "sections": [],
+    "primary_label": "",
+    "primary_href": "/pricing",
+    "secondary_label": "",
+    "secondary_href": "/features",
+    "section_title": "",
+    "section_subtitle": "",
+    "highlight_title": "",
+    "highlight_text": ""
+  },
+  "home": {
+    "label": "COMMUNICATION, BEAUTIFULLY ORGANIZED",
+    "title": "Every campaign. One powerful workspace.",
+    "subtitle": "Manage your audience, create branded campaigns and communicate with confidence. A thoughtfully designed platform for growing teams.",
+    "sections": [
+      {
+        "title": "Audience management",
+        "description": "Import contacts, organize lists and build targeted segments."
+      },
+      {
+        "title": "Campaign design studio",
+        "description": "Create reusable email templates with your brand identity."
+      },
+      {
+        "title": "Verified sender domains",
+        "description": "Manage authorized sending domains and sender addresses."
+      },
+      {
+        "title": "Company Brand Studio",
+        "description": "Edit logos, headers, footers, social links and colors."
+      },
+      {
+        "title": "Approvals and scheduling",
+        "description": "Plan communications and apply review workflows."
+      },
+      {
+        "title": "Delivery insights",
+        "description": "Understand delivery, bounces and unsubscribes."
+      }
+    ],
+    "primary_label": "Explore plans",
+    "primary_href": "/pricing",
+    "secondary_label": "Discover features",
+    "secondary_href": "/features",
+    "section_title": "Powerful tools. Simpler workflows.",
+    "section_subtitle": "All the essentials for meaningful business communication.",
+    "highlight_title": "Your message, your identity.",
+    "highlight_text": "Bring your own verified email domain, design your campaign templates, and add company footers and links that reflect your business."
+  }
+}

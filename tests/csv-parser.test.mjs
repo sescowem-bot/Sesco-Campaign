@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseCsv, normalizePhone} from '../lib/contacts/parse-csv.mjs';
+test('reads header and rows', () => assert.deepEqual(parseCsv('First,Email\nAda,ada@example.org'), [['First','Email'],['Ada','ada@example.org']]));
+test('handles quoted commas and double quotes', () => assert.deepEqual(parseCsv('Name,Comment\r\n"Ada, Ngozi","She said ""hello"""'),[['Name','Comment'],['Ada, Ngozi','She said "hello"']]));
+test('preserves newlines inside quotes', () => assert.deepEqual(parseCsv('Name,Notes\nAda,"a\nb"'),[['Name','Notes'],['Ada','a\nb']]));
+test('handles BOM, trailing newline and blank rows', () => assert.deepEqual(parseCsv('\ufeffA,B\r\n\r\n1,2\r\n'),[['A','B'],['1','2']]));
+test('rejects malformed quote and unclosed quote', () => {assert.throws(()=>parseCsv('a,b\nx,"oops'));assert.throws(()=>parseCsv('a,b\nx,ab"cd'));});
+test('enforces strict row cap', () => assert.throws(()=>parseCsv('a\nb\nc',{maxRows:2})));
+test('enforces column cap', () => assert.throws(()=>parseCsv('a,b,c',{maxColumns:2})));
+test('normalizes Nigerian mobile numbers only when selected',()=>{assert.equal(normalizePhone('0803 123 4567','NG'),'+2348031234567');assert.equal(normalizePhone('0803 123 4567'),'08031234567');assert.equal(normalizePhone('+44 (7700) 900 123'),'+447700900123');});

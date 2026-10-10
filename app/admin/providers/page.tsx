@@ -1,0 +1,11 @@
+import {redirect} from 'next/navigation';
+import {supabaseServer} from '@/lib/supabase/server';
+import {WorkspaceShell} from '@/components/workspace-shell';
+import {ProviderForm,ProviderLimitsForm,ReconcileForm} from '@/components/provider-form';
+export default async function Providers() {
+ const db=await supabaseServer();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ const {data:owner}=await db.rpc('is_platform_super_admin');if(!owner)redirect('/dashboard');
+ const {data:unresolved}=await db.from('sending_domains').select('id,domain,provider,organization_id').is('provider_domain_id',null).neq('verification_status','revoked');
+ const {data,error}=await db.from('email_provider_settings').select('*').order('provider');
+ return <WorkspaceShell admin title="Email providers"><p className="muted">Manage central provider access for company workspaces.</p><div className="notice">API keys stay in server environment settings. Configure RESEND_API_KEY and BREVO_API_KEY before enabling access. Delivery must also be enabled in the server environment. Budgets are shared across companies and configuration tests.</div>{error?<p role="alert">Provider settings unavailable. Confirm migrations 007 and 009 is installed.</p>:<div className="admin-columns">{data.map(p=><section className="panel" key={p.provider}><span className="workspace-overline">Email infrastructure</span><h2>{p.provider==='resend'?'Resend':'Brevo'}</h2><span className={`status-chip ${p.enabled?'status-granted':''}`}>{p.enabled?'Enabled':'Disabled'}</span><p className="muted">Connection: {p.health_status}. {p.checked_at?`Last checked ${new Date(p.checked_at).toISOString()}`:'Not checked yet.'}</p><ProviderForm provider={p.provider} enabled={p.enabled}/><ProviderLimitsForm provider={p.provider} daily={p.daily_limit} interval={p.minimum_interval_seconds}/></section>)}</div>}<h2>Registration recovery</h2><p className="muted">Check the provider dashboard before linking an unresolved registration. The company must still prove domain ownership.</p>{unresolved?.length?unresolved.map(d=><section key={d.id} className="panel sender-domain"><h3>{d.domain}</h3><p className="muted">Company: {d.organization_id}</p><ReconcileForm id={d.id} provider={d.provider}/></section>):<p className="muted">No unresolved registrations.</p>}</WorkspaceShell>;
+}

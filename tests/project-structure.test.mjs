@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,existsSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import {dirname,join} from 'node:path';
+const root=join(dirname(fileURLToPath(import.meta.url)),'..');
+const migration=readFileSync(join(root,'supabase/migrations/006_contacts_audiences.sql'),'utf8');
+test('Batch 6 retains previous migrations',()=>{for(let i=1;i<=5;i++)assert.ok(existsSync(join(root,'supabase/migrations',String(i).padStart(3,'0')+['_foundation.sql','_access_policies.sql','_company_plans.sql','_payments.sql','_brand_templates.sql'][i-1])))});
+test('contacts and related tables enable RLS',()=>{for(const table of ['contacts','contact_lists','contact_list_members','contact_segments','contact_import_batches'])assert.ok(migration.includes(`alter table public.${table} enable row level security;`))});
+test('contact imports have idempotency and protected writes',()=>{assert.match(migration,/unique\(organization_id,batch_key\)/);assert.match(migration,/revoke all on function public\.import_contact_batch/);assert.match(migration,/public\.can_manage_contacts\(p_org\)/)});
+test('list memberships require matching tenant keys',()=>{assert.match(migration,/foreign key\(organization_id,list_id\)/);assert.match(migration,/foreign key\(organization_id,contact_id\)/)});

@@ -1,0 +1,9 @@
+import {redirect} from 'next/navigation';
+import {z} from 'zod';
+import {supabaseServer} from '@/lib/supabase/server';
+import {WorkspaceShell} from '@/components/workspace-shell';
+export default async function Audit({searchParams}:{searchParams:Promise<{org?:string}>}){
+ const {org}=await searchParams;const db=await supabaseServer();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');const {data:owner}=await db.rpc('is_platform_super_admin');if(!owner)redirect('/dashboard');
+ const valid=!org||z.string().uuid().safeParse(org).success;let query=db.from('audit_logs').select('id,organization_id,actor_id,action,entity_type,entity_id,details,created_at').order('id',{ascending:false}).limit(100);if(org&&valid)query=query.eq('organization_id',org);const {data,error}=valid?await query:{data:null,error:new Error('Invalid company ID')};
+ return <WorkspaceShell admin title="Audit activity"><p className="muted">Latest 100 recorded administration and campaign operations. Read-only records.</p><form className="panel report-filters" method="get"><label>Company ID, optional<input name="org" defaultValue={org||''} placeholder="All companies"/></label><button className="btn">Apply filter</button></form>{error?<p role="alert">Audit data unavailable. Check the company filter and database setup.</p>:<div className="table-scroll"><table className="admin-table"><thead><tr>{['Time, UTC','Action','Company','Actor','Entity','Details'].map(v=><th scope="col" key={v}>{v}</th>)}</tr></thead><tbody>{data?.map(a=><tr key={a.id}><td>{new Date(a.created_at).toISOString()}</td><td>{a.action}</td><td>{a.organization_id||'Platform'}</td><td>{a.actor_id||'System'}</td><td>{a.entity_type}<small className="audit-entity">{a.entity_id}</small></td><td><code className="audit-details">{JSON.stringify(a.details)}</code></td></tr>)}</tbody></table>{!data?.length&&<p>No matching audit records.</p>}</div>}</WorkspaceShell>;
+}

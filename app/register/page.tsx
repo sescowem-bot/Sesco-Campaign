@@ -1,0 +1,2 @@
+export const metadata={robots:{index:false,follow:false}};
+import {PublicLayout} from '@/components/public';import {AuthForm} from '@/components/auth-form';export default function Page(){return <PublicLayout slug="register" label="GET STARTED" title="Create your account" subtitle="Verify your email. Organization access is assigned separately by the platform team."><section className="shell section"><AuthForm mode="register"/></section></PublicLayout>}

@@ -1,0 +1,13 @@
+# Backup and recovery
+
+No database backup or restore was performed in this development session. A backup is not verified until restored successfully in isolation.
+
+The optional npm run backup:database script requires pg_dump installed on the operator's trusted machine, a server-only DATABASE_URL and an external BACKUP_DIRECTORY. Use the target database's documented secure connection settings. It writes a custom-format archive through a partial file, uses a restrictive umask, changes archive mode to 0600 and renames only on success. Passwords are passed through the child environment rather than command arguments; provider/application keys are not forwarded. Failures show generic messages. Store backups outside the source repository, encrypt them and keep an off-host copy. Do not commit or upload raw sensitive archives to a public repository.
+
+Use the hosting platform's supported backup method when managed permissions prevent a complete pg_dump. Check dump warnings and completeness using the database tools privately; a zero exit code does not prove every managed-service component is recoverable. A database dump does not back up storage-object bytes, provider/DNS configuration, deployment secrets or external schedules. Preserve those through their supported export/backup mechanisms with separate access controls.
+
+Agree recovery point and recovery time targets with the operator. Choose backup frequency, encryption, retention and access based on those targets. No scheduled backup or retention deletion is enabled by this source package.
+
+Restore rehearsal: choose a separate disposable database with no production routing or worker trigger; keep provider keys absent and sending disabled. Inspect archive contents with pg_restore --list. Follow the target platform's supported restore procedure, including required roles/extensions and managed auth/storage handling. Restore schema/data, check migration state and RLS/grants, validate record counts and sampled relationships, then test company isolation, session/identity behavior and campaign/payment history. Record the archive identity, restore duration, checks and operator decision. Never point a rehearsal at the live database.
+
+During recovery, disable worker/payment intake until state is reconciled. A restored database may predate provider acceptance or payment finalization. Compare provider/payment histories before resuming, especially unknown deliveries and successful charges. Do not blindly retry restored pending rows. Rotate credentials if the incident exposed them, use the correct origin and configure callbacks only after acceptance.

@@ -1,0 +1,15 @@
+# Batch 12 quality report
+
+Release candidate 0.12.0. Clean npm ci, npm run lint, npm run typecheck, npm test, npm run build and npm run test:smoke passed. All 72 tests passed. Lint completed without warnings. HTTP smoke passed for 16 public/health routes, eight protected login redirects and nine API rejection checks. Security checks verified MIME/framing/referrer headers, absent framework advertising, a fresh CSP nonce on each HTML request and matching nonces on every initial server script. npm audit --omit=dev reported zero vulnerabilities.
+
+Migrations 001 through 012 applied sequentially in isolated PGlite PostgreSQL with mocked Supabase auth/roles. New financial tests exercised unauthorized starts/finalization, amount mismatch, purchased interval preservation after plan editing, replay, transaction identity conflict, one active subscription, one activation audit record, missing service claim denial and the checkout rate limit. These are real SQL executions in a local test engine, not hosted Supabase acceptance or concurrent provider requests.
+
+Pure tests verify byte limits on chunked/multi-byte requests, stalled stream deadlines, UTF-8 rejection, browser mutation origin checks, canonical HTTPS origin compatibility, exact-byte payment HMAC validation, production CSP restrictions and release configuration key-role checks without secret output. Existing tenant, CMS, role, campaign, provider adapter, queue, suppression, event and report tests remain intact. Node 24 TypeScript stripping is supported by the test modules.
+
+The read-only check:release command was run in this unconfigured development environment and returned nonzero as expected for missing deployment settings. It did not contact services or print key values. Its configured synthetic test case passed and a public service-key case was rejected. This gate remains pending with real staging settings. The backup helper was not run; no backup or restore evidence exists.
+
+No live payment, send, hosted migration, DNS/provider verification, external schedule, GitHub change or deployment occurred. No local browser runtime or signed-in hosted session was available, so desktop/mobile visual, hydration, full browser/CSP and signed-in end-to-end acceptance remain pending. HTTP-rendered script nonce checks are not browser execution tests. Existing static layout fixtures remain available in docs/preview and use illustrative/source-default data.
+
+Dependency installation still emits an ESLint 9 support deprecation. It is a development-tool support issue despite passing lint and zero production advisories; a compatible supported tooling upgrade remains a launch assessment item. The framework was not changed arbitrarily to a new major release. See LIVE_ACCEPTANCE.md for all outstanding operational and feature-scope decisions.
+
+The archive retains every Batch 11 source path, keeps all authored Markdown in MD except README.md, includes migration/setup/changed-file/progress records and excludes dependencies, builds, credentials and backup archives. ZIP integrity was checked. Twelve source packages are delivered; production readiness is explicitly not accepted.

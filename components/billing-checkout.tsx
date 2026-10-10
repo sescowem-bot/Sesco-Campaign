@@ -1,0 +1,7 @@
+'use client';
+import {useState} from 'react';
+export function BillingCheckout({organizations,plans}:{organizations:{id:string;name:string}[];plans:{id:string;name:string;price_ngn_kobo:number}[]}){
+ const [org,setOrg]=useState(organizations[0]?.id||'');const [plan,setPlan]=useState(plans[0]?.id||'');const [busy,setBusy]=useState(false);const [error,setError]=useState('');
+ async function checkout(){setBusy(true);setError('');try{const res=await fetch('/api/billing/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({organization_id:org,plan_id:plan})});const body=await res.json();if(!res.ok)throw Error(body.error||'Checkout failed');window.location.assign(body.checkout_url);}catch(e){setError(e instanceof Error?e.message:'Payment initialization failed');setBusy(false);}}
+ return <div className="admin-form"><h2>Upgrade company subscription</h2><label>Company<select value={org} onChange={e=>setOrg(e.target.value)}>{organizations.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></label><label>Subscription plan<select value={plan} onChange={e=>setPlan(e.target.value)}>{plans.map(x=><option key={x.id} value={x.id}>{x.name} · ₦{(x.price_ngn_kobo/100).toLocaleString('en-NG')}</option>)}</select></label><button className="btn" disabled={busy||!org||!plan} onClick={checkout}>{busy?'Connecting to Paystack…':'Continue to secure payment'}</button>{error&&<p role="alert">{error}</p>}</div>;
+}

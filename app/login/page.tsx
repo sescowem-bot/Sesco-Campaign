@@ -1,0 +1,2 @@
+export const metadata={robots:{index:false,follow:false}};
+import {PublicLayout} from '@/components/public';import {AuthForm} from '@/components/auth-form';export default function Page(){return <PublicLayout slug="login" label="ACCOUNT ACCESS" title="Welcome back" subtitle="Sign in securely to your campaign workspace."><section className="shell section"><AuthForm mode="login"/></section></PublicLayout>}
