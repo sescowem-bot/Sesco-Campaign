@@ -37,7 +37,8 @@ export async function refreshDomain(org:string,id:string,trigger=false) {
   const {error:invalidate}=await db.from('sending_domains').update({verification_status:'pending'}).eq('id',id).neq('verification_status','revoked');
   if(invalidate) throw new Error('Cannot refresh domain verification.');
   const state=await adapter.check(row.domain,row.provider_domain_id,trigger);
-  const owned=await ownershipVerified(row.domain,row.ownership_token);
+  const {data:own}=row.ownership_method==='provider_account'?await db.from('platform_workspace').select('organization_id').eq('organization_id',org).maybeSingle():{data:null};
+  const owned=row.ownership_method==='provider_account'?!!own:await ownershipVerified(row.domain,row.ownership_token);
   const {error:save}=await db.rpc('email_domain_sync',{p_id:id,p_provider_id:state.id,p_records:state.records,p_verified:state.verified&&owned});
   if(save) throw new Error('Domain status could not be saved.');
   return {row,adapter,verified:state.verified&&owned};

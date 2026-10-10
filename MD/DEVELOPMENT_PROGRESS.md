@@ -1,3 +1,11 @@
+# Current update: admin campaign testing · 0.14.0
+
+Saved campaign previews to the verified owner email, revision-linked test history and owner readiness checks are implemented. See [testing setup](ADMIN_CAMPAIGN_TESTING.md). 87 automated tests passed. Deployment and live acceptance remain pending.
+
+# Current update: owner workspace · 0.13.0
+
+Dedicated owner workspace, owner approval, existing Resend connection and selected-run manual dispatch are implemented. See [owner setup](OWNER_WORKSPACE_UPGRADE.md). Existing customer access restrictions remain. Hosted deployment and live delivery acceptance are pending.
+
 # Development progress
 
 12 of 12 source delivery packages delivered: 100 percent of the source batch sequence. Live production acceptance is pending; this does not mean the app is approved for launch. This measures source delivery, not production readiness.

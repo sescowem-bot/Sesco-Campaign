@@ -4,11 +4,12 @@ import {renderCampaign,type PreviewContact} from '@/lib/campaigns/render';
 import {sendQueuedEmail} from './transport';
 import {z} from 'zod';
 const claimSchema=z.object({delivery:z.object({id:z.string().uuid(),organization_id:z.string().uuid(),lease_token:z.string().uuid(),recipient_email:z.string(),recipient:z.custom<PreviewContact>(),unsubscribe_token:z.string().uuid()}),run:z.object({id:z.string().uuid(),provider:z.enum(['resend','brevo']),snapshot:z.object({campaign:z.object({design:z.unknown(),subject:z.string(),preheader:z.string()}),sender:z.object({id:z.string().uuid(),domain_id:z.string().uuid(),from_name:z.string(),from_email:z.string(),reply_to:z.string()}),brand:z.object({display_name:z.string(),postal_address:z.string(),primary_color:z.string()})})})});
-export async function processDelivery() {
+export async function processDelivery(scope?:{org:string;run:string}) {
  if(process.env.EMAIL_DELIVERY_ENABLED!=='true')return {result:'disabled'};
  const url=process.env.NEXT_PUBLIC_APP_URL;if(!url)throw new Error('Public application URL is missing');
  const origin=new URL(url);if(origin.protocol!=='https:'||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash)throw new Error('Public application URL must be an HTTPS origin');
- const db=emailServiceDb();const {error:recovery}=await db.rpc('delivery_recover');if(recovery)throw new Error('Lease recovery failed');const {data:claim,error}=await db.rpc('delivery_claim');if(error)throw new Error('Queue claim failed');if(!claim)return {result:'idle'};
+ const db=emailServiceDb();if(!scope){const {error:recovery}=await db.rpc('delivery_recover');if(recovery)throw new Error('Lease recovery failed');}
+ const {data:claim,error}=scope?await db.rpc('owner_delivery_claim',{p_org:z.string().uuid().parse(scope.org),p_run:z.string().uuid().parse(scope.run)}):await db.rpc('delivery_claim');if(error)throw new Error('Queue claim failed');if(!claim)return {result:'idle'};
  const parsed=claimSchema.safeParse(claim);if(!parsed.success)throw new Error('Invalid queue snapshot');
  const {delivery:d,run:r}=parsed.data;
  const unsubscribe=new URL('/api/email/unsubscribe',origin);unsubscribe.searchParams.set('token',d.unsubscribe_token);

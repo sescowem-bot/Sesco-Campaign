@@ -54,3 +54,9 @@ test('missing acknowledgement fails instead of claiming delivery',async()=>{
  const adapter=providerAdapter('brevo','secret',async()=>Response.json({}));
  await assert.rejects(adapter.sendTest({name:'Example',email:'hello@example.com',replyTo:'reply@example.com',to:'owner@example.com',domain:'example.com',html:'Test',attempt:'attempt-id'}),/acknowledgement/);
 });
+test('campaign test subjects are passed through and header injection is rejected before sending',async()=>{
+ const calls=[];const adapter=providerAdapter('resend','secret',async(_,options)=>{calls.push(JSON.parse(options.body));return Response.json({id:'test-id'});});
+ const input={name:'Brand',email:'hello@example.com',replyTo:'reply@example.com',to:'owner@example.com',domain:'example.com',html:'Test',attempt:'id',subject:'[TEST] Campaign update'};
+ await adapter.sendTest(input);assert.equal(calls[0].subject,input.subject);
+ await assert.rejects(adapter.sendTest({...input,subject:'Injected\r\nBcc: other@example.com'}),/Invalid test email subject/);assert.equal(calls.length,1);
+});

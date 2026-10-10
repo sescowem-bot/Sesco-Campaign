@@ -1,24 +1,24 @@
 # SESCO Campaign Cloud
 
-Current release: **Batch 12, version 0.12.0**. Complete editable Next.js and Supabase source through Batch 12 by Sesco Studio. Production acceptance remains outstanding.
+Current release: **Admin campaign testing, version 0.14.0**. Complete editable Next.js and Supabase source through migration 014 by Sesco Studio. Production acceptance remains outstanding.
 
 ## Setup
 
 1. Use Node.js 24 and run `npm ci`.
 2. Copy `.env.example` to `.env.local` and configure Supabase values.
-3. On a new database, apply SQL migrations 001 through 012 in order. On a database already at Batch 11, apply only migration 012 after backup.
-4. Follow [Batch 12 setup](MD/BATCH12_SETUP.md) and the provider/worker instructions in [Batch 9 setup](MD/BATCH9_SETUP.md).
+3. On a new database, apply SQL migrations 001 through 014 in order, or use the fresh install SQL once. At migration 013, apply only 014. At migration 012, apply 013 then 014.
+4. Follow [admin campaign testing setup](MD/ADMIN_CAMPAIGN_TESTING.md) and the provider/worker instructions in [Batch 9 setup](MD/BATCH9_SETUP.md).
 5. Run `npm run dev`, or `npm run build` then `npm start`.
 
 ## Available modules
 
-Protected account and company workspaces; contacts and CSV/XLSX imports; lists and segments; branding and structured email templates; domain verification and senders; campaign composition and independent approvals; durable scheduled delivery queues; provider events and suppression; aggregate reports and CSV exports; Paystack billing; company status, subscription and role administration; public website CMS with drafts, revisions, preview and publication; audit activity.
+Protected account and company workspaces; contacts and CSV/XLSX imports; lists and segments; branding and structured email templates; domain verification and senders; campaign composition, owner approval in the dedicated brand workspace and independent customer approvals; durable scheduled delivery queues; provider events and suppression; aggregate reports and CSV exports; Paystack billing; company status, subscription and role administration; public website CMS with drafts, revisions, preview and publication; audit activity.
 
 `/admin` requires Super Admin access. `/dashboard` requires sign-in and company membership for company tools. Bootstrap the first owner through reviewed Supabase SQL instructions in [engineering handoff](MD/AGENTS.md). Company role assignment requires an existing verified account and does not send invitations.
 
 ## Documentation
 
-All authored Markdown is in **MD**, except this GitHub README. Start with [development progress](MD/DEVELOPMENT_PROGRESS.md), [release notes](MD/BATCH12_RELEASE_NOTES.md) and [quality report](MD/QUALITY_REPORT_BATCH12.md). Historical batch notes describe their original releases; current setup notes take precedence.
+All authored Markdown is in **MD**, except this GitHub README. Start with [admin campaign testing](MD/ADMIN_CAMPAIGN_TESTING.md), [development progress](MD/DEVELOPMENT_PROGRESS.md), [release notes](MD/BATCH12_RELEASE_NOTES.md) and [quality report](MD/QUALITY_REPORT_BATCH12.md). Historical batch notes describe their original releases; current setup notes take precedence.
 
 ## Verification
 

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync,readdirSync} from 'node:fs';
 import {PGlite} from '@electric-sql/pglite';
 const ids={owner:'10000000-0000-4000-8000-000000000001',a:'10000000-0000-4000-8000-000000000002',b:'10000000-0000-4000-8000-000000000003',viewer:'10000000-0000-4000-8000-000000000004',orgA:'20000000-0000-4000-8000-000000000001',orgB:'20000000-0000-4000-8000-000000000002'};
-test('migrations 001–012 and tenant/security flows in isolated PostgreSQL',async t=>{
+test('migrations 001–014 and tenant/security flows in isolated PostgreSQL',async t=>{
  const db=new PGlite();t.after(()=>db.close());
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
  create schema auth; create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
@@ -227,4 +227,69 @@ test('migrations 001–012 and tenant/security flows in isolated PostgreSQL',asy
   await db.exec('reset role');await db.query("update organizations set status='suspended' where id=$1",[ids.orgA]);
   await as(ids.a);assert.equal((await db.query('select can_manage_senders($1) as allowed',[ids.orgA])).rows[0].allowed,false);
  });
+ await t.test('owner workspace is independent, private, and migration 013 can be rerun',async()=>{
+  await db.exec('reset role');
+  const before=(await db.query('select organization_id from platform_workspace')).rows[0].organization_id;
+  await db.exec(readFileSync(new URL('../supabase/migrations/013_owner_workspace.sql',import.meta.url),'utf8'));
+  assert.equal((await db.query('select organization_id from platform_workspace')).rows[0].organization_id,before);
+  await as(ids.a);assert.equal((await db.query('select * from platform_workspace')).rows.length,0);
+  await assert.rejects(db.query('update platform_workspace set monthly_email_limit=999999'),/permission denied/);
+  await as(ids.owner);assert.equal((await db.query('select can_edit_campaigns($1) as allowed',[before])).rows[0].allowed,true);
+  assert.equal((await db.query('select can_edit_campaigns($1) as allowed',[ids.orgA])).rows[0].allowed,false);
+ });
+ await t.test('owner can draft without sender, connect existing domain, approve and queue without subscription',async()=>{
+  await as(ids.owner);const org=(await db.query('select organization_id from platform_workspace')).rows[0].organization_id;
+  const design=JSON.stringify({version:'1',blocks:[{type:'heading',text:'Owner update'}]});
+  const args=[org,null,0,'Owner campaign','Owner update','',design,null,'all',null,null];
+  const campaign=(await db.query('select campaign_save($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as id',args)).rows[0].id;
+  await assert.rejects(db.query("select campaign_transition($1,$2,1,'owner_approve','')",[org,campaign]),/Verified sender/);
+  const connect=[ids.owner,'mail.example.com','existing-domain-id','[]','My brand','owner@mail.example.com','reply@example.com','12 Brand Street'];
+  await assert.rejects(db.query('select owner_connect_resend($1,$2,$3,$4,$5,$6,$7,$8)',connect),/permission denied/);
+  await as(ids.owner,'service_role');
+  await assert.rejects(db.query('select owner_connect_resend($1,$2,$3,$4,$5,$6,$7,$8)',[ids.a,...connect.slice(1)]),/Not authorized/);
+  const sender=(await db.query('select owner_connect_resend($1,$2,$3,$4,$5,$6,$7,$8) as id',connect)).rows[0].id;
+  assert.equal((await db.query('select delivery_monthly_limit($1) as quota',[org])).rows[0].quota,10000);
+  await db.exec('reset role');
+  await db.query("insert into contacts(organization_id,first_name,email,consent_status,consent_evidence,consent_recorded_at) values($1,'Test','owner-test@example.com','granted','Requested test',now())",[org]);
+  await as(ids.owner);args[1]=campaign;args[2]=1;args[7]=sender;
+  await db.query('select campaign_save($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',args);
+  await db.query("select campaign_transition($1,$2,2,'owner_approve','Owner reviewed')",[org,campaign]);
+  const row=(await db.query('select status,reviewed_by from campaign_drafts where id=$1',[campaign])).rows[0];assert.equal(row.status,'approved');assert.equal(row.reviewed_by,ids.owner);
+  const audit=(await db.query("select count(*)::int as n from audit_logs where action='campaign.owner_approve' and entity_id=$1",[campaign])).rows[0];assert.equal(audit.n,1);
+  const ownRun=(await db.query('select campaign_enqueue($1,$2,3) as id',[org,campaign])).rows[0].id;assert.ok(ownRun);
+  await assert.rejects(db.query('select owner_delivery_claim($1,$2)',[org,ownRun]),/permission denied/);
+  await as(ids.owner,'service_role');
+  await assert.rejects(db.query('select owner_delivery_claim($1,$2)',[ids.orgA,runId]),/Not authorized/);
+  assert.equal((await db.query('select owner_delivery_claim($1,$2) as claim',[org,runId])).rows[0].claim,null);
+  const claim=(await db.query('select owner_delivery_claim($1,$2) as claim',[org,ownRun])).rows[0].claim;assert.equal(claim.run.id,ownRun);assert.equal(claim.delivery.organization_id,org);
+  await db.exec('reset role');await db.query("update organizations set status='active' where id=$1",[ids.orgA]);
+  await as(ids.owner);const revision=(await db.query('select revision from campaign_drafts where id=$1',[campaignId])).rows[0].revision;await assert.rejects(db.query("select campaign_transition($1,$2,$3,'owner_approve','')",[ids.orgA,campaignId,revision]),/Owner approval/);
+  await as(ids.a);assert.equal((await db.query('select is_owner_workspace($1) as own',[org])).rows[0].own,false);
+  assert.equal((await db.query('select * from campaign_drafts where organization_id=$1',[org])).rows.length,0);
+ });
+
+ await t.test('owner campaign tests bind the verified account, revision and shared quota without approving or queuing',async()=>{
+  await db.exec('reset role');
+  await db.exec(readFileSync(new URL('../supabase/migrations/014_owner_campaign_tests.sql',import.meta.url),'utf8'));
+  await db.exec("update email_provider_settings set last_dispatch_at=now()-interval '1 day'");
+  await as(ids.owner);const org=(await db.query('select organization_id from platform_workspace')).rows[0].organization_id;
+  const sender=(await db.query('select id from sender_identities where organization_id=$1 and is_active',[org])).rows[0].id;
+  const design=JSON.stringify({version:'1',blocks:[{type:'heading',text:'Preview me'}]});
+  const campaign=(await db.query('select campaign_save($1,null,0,$2,$3,$4,$5,$6,$7,null,null) as id',[org,'Preview draft','Test subject','',design,sender,'all'])).rows[0].id;
+  await assert.rejects(db.query('select owner_campaign_test_reserve($1,$2,99)',[org,campaign]),/Campaign changed/);
+  await as(ids.a);await assert.rejects(db.query('select owner_campaign_test_reserve($1,$2,1)',[org,campaign]),/Owner campaign testing/);
+  await as(ids.owner);await assert.rejects(db.query('select owner_campaign_test_reserve($1,$2,1)',[ids.orgA,campaignId]),/Owner campaign testing/);
+  await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=null where id=$1',[ids.owner]);
+  await as(ids.owner);await assert.rejects(db.query('select owner_campaign_test_reserve($1,$2,1)',[org,campaign]),/Verified account email/);
+  await db.exec('reset role');await db.query('update auth.users set email_confirmed_at=now() where id=$1',[ids.owner]);
+  await as(ids.owner);
+  const result=(await db.query('select owner_campaign_test_reserve($1,$2,1) as value',[org,campaign])).rows[0].value;
+  assert.equal(result.recipient,'owner@example.com');assert.equal(result.campaign.revision,1);
+  const attempt=(await db.query('select * from email_test_attempts where id=$1',[result.attempt])).rows[0];assert.equal(attempt.campaign_id,campaign);assert.equal(attempt.campaign_revision,1);
+  assert.equal((await db.query('select status from campaign_drafts where id=$1',[campaign])).rows[0].status,'draft');
+  assert.equal((await db.query('select count(*)::int as n from campaign_runs where campaign_id=$1',[campaign])).rows[0].n,0);
+  await assert.rejects(db.query('select email_test_reserve($1,$2)',[org,sender]),/Test limit|spacing/);
+  await assert.rejects(db.query('select owner_campaign_test_reserve($1,$2,1)',[org,campaign]),/Test limit|spacing/);
+ });
+
 });

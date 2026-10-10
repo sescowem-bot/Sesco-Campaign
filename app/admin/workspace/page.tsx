@@ -1,0 +1,24 @@
+import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {supabaseServer} from '@/lib/supabase/server';
+import {WorkspaceShell} from '@/components/workspace-shell';
+import {OwnerSenderForm} from '@/components/owner-sender-form';
+import {ownerReadiness} from '@/lib/campaigns/readiness';
+import {operationLinks} from '@/lib/admin-operations';
+export const maxDuration=60;
+export default async function OwnerWorkspace() {
+ const db=await supabaseServer();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ const {data:owner}=await db.rpc('is_platform_super_admin');if(owner!==true)redirect('/dashboard');
+ const {data:workspace,error}=await db.from('platform_workspace').select('organization_id,monthly_email_limit').maybeSingle();
+ if(error||!workspace)return <WorkspaceShell title="My brand workspace"><p className="notice" role="alert">The owner workspace upgrade is not installed. Apply SQL migration 013 once, then reload this page.</p></WorkspaceShell>;
+ const org=workspace.organization_id;
+ const [company,brand,senders,providers,audience,domains]=await Promise.all([db.from('organizations').select('name,status').eq('id',org).single(),db.from('organization_branding').select('display_name,postal_address').eq('organization_id',org).single(),db.from('sender_identities').select('id,domain_id,from_name,from_email,is_active').eq('organization_id',org),db.from('email_provider_settings').select('provider,enabled'),db.rpc('campaign_audience_count',{p_org:org,p_type:'all',p_audience:null}),db.from('sending_domains').select('id,provider,verification_status').eq('organization_id',org)]);
+ const readiness=ownerReadiness({org,active:company.error?null:company.data?.status==='active',senderReady:senders.error||providers.error||domains.error?null:!!senders.data?.some(s=>s.is_active&&domains.data?.some(d=>d.id===s.domain_id&&d.verification_status==='verified'&&providers.data?.some(p=>p.provider===d.provider&&p.enabled)&&!!process.env[d.provider==='resend'?'RESEND_API_KEY':'BREVO_API_KEY'])),addressReady:brand.error?null:(brand.data?.postal_address||'').trim().length>=6,eligible:audience.error?null:audience.data,dispatch:process.env.EMAIL_DELIVERY_ENABLED==='true',origin:process.env.NEXT_PUBLIC_APP_URL,serverCredentials:!!process.env.NEXT_PUBLIC_SUPABASE_URL&&!!process.env.SUPABASE_SERVICE_ROLE_KEY});
+ return <WorkspaceShell org={org} title="My brand workspace"><p className="muted">Your own business workspace. Customer account suspensions do not affect this workspace. You can upload contacts, create campaigns, approve your own messages and review delivery reports here.</p>
+ {company.error||brand.error||senders.error?<p role="alert">Some workspace details could not be loaded. Reload before making changes.</p>:null}
+ <section className="panel"><h2>{company.data?.name||'My brand'}</h2><p>Status: {company.data?.status||'Unavailable'} · Internal monthly allowance: {workspace.monthly_email_limit.toLocaleString()} emails. No customer subscription is needed for this workspace.</p><div className="actions"><Link className="btn" href={`/dashboard/campaigns?org=${org}&create=1`}>Create campaign</Link><Link className="btn secondary" href={`/dashboard/imports?org=${org}`}>Upload contacts</Link><Link className="btn secondary" href={`/dashboard/reports?org=${org}`}>View reports</Link></div></section>
+ <section className="panel"><h2>Campaign readiness</h2><p className="muted">{readiness.filter(r=>r.state==='Ready').length} of {readiness.length} setup checks ready. These checks do not confirm inbox delivery.</p><div className="feature-grid">{readiness.map(r=><article key={r.label}><h3>{r.label}</h3><span className="status-chip">{r.state}</span><p>{r.detail}</p><Link className="inline-link" href={r.href}>Open {r.label.toLowerCase()}</Link></article>)}</div></section>
+ <div className="feature-grid operation-grid">{operationLinks(org).map(item=><section className="feature-card" key={item.href}><h3>{item.title}</h3><p>{item.description}</p><Link className="btn secondary" href={item.href}>{item.title}</Link></section>)}</div>
+ <section id="email-connection" className="panel admin-settings-section"><h2>Your existing email connection</h2>{senders.data?.filter(s=>s.is_active).map(s=><p key={s.id}>{s.from_name} &lt;{s.from_email}&gt;</p>)}<p>Create drafts immediately. Before approval, connect a verified sender, save your postal address and upload contacts with recorded consent. Sending remains an explicit action in Delivery queue.</p><details open={!senders.data?.some(s=>s.is_active)}><summary>Connect an existing Resend sender</summary><OwnerSenderForm name={brand.data?.display_name||company.data?.name||''} address={brand.data?.postal_address||''}/></details><Link className="inline-link" href={`/dashboard/senders?org=${org}`}>Sender status and configuration test</Link></section>
+ </WorkspaceShell>;
+}

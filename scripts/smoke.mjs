@@ -15,7 +15,7 @@ try {
  const second=await fetch(base+'/');assert.notEqual(second.headers.get('content-security-policy'),policy,'Nonce changes per request');
  const paths=['/','/about','/features','/solutions','/pricing','/resources','/faq','/contact','/privacy','/terms','/cookies','/acceptable-use','/login','/register','/api/health','/unsubscribe'];
  for(const path of paths){const response=await fetch(base+path);assert.equal(response.status,200,path);}
- for(const path of ['/admin/cms','/admin/audit','/dashboard/team?org=20000000-0000-4000-8000-000000000001','/dashboard/reports?org=20000000-0000-4000-8000-000000000001','/dashboard/delivery?org=20000000-0000-4000-8000-000000000001','/admin/providers','/dashboard/senders?org=20000000-0000-4000-8000-000000000001','/dashboard/campaigns?org=20000000-0000-4000-8000-000000000001']){
+ for(const path of ['/admin/workspace','/admin/cms','/admin/audit','/dashboard/team?org=20000000-0000-4000-8000-000000000001','/dashboard/reports?org=20000000-0000-4000-8000-000000000001','/dashboard/delivery?org=20000000-0000-4000-8000-000000000001','/admin/providers','/dashboard/senders?org=20000000-0000-4000-8000-000000000001','/dashboard/campaigns?org=20000000-0000-4000-8000-000000000001']){
   const response=await fetch(base+path,{redirect:'manual'});assert.equal(response.status,307,path);assert.ok(response.headers.get('location').includes('/login'));
  }
  for(const path of ['/api/worker/delivery','/api/email/webhooks/brevo']){const response=await fetch(base+path,{method:'POST'});assert.equal(response.status,401,path);}
@@ -23,5 +23,5 @@ try {
  const invalid=await fetch(base+'/api/email/unsubscribe?token=invalid',{method:'POST'});assert.equal(invalid.status,400);
  for(const path of ['/auth/signout','/api/billing/checkout','/api/billing/verify','/api/contacts/import']){const response=await fetch(base+path,{method:'POST',headers:{Origin:'https://hostile.example'}});assert.equal(response.status,403,path);}
  const webhook=await fetch(base+'/api/billing/webhook',{method:'POST',body:'{}'});assert.equal(webhook.status,503);
- console.log(`${paths.length} public/health routes passed; 8 protected routes redirect to login without setup; 9 API rejection checks passed; response headers and per-request script nonces passed.`);
+ console.log(`${paths.length} public/health routes passed; 9 protected routes redirect to login without setup; 9 API rejection checks passed; response headers and per-request script nonces passed.`);
 } finally {server.kill('SIGTERM');}

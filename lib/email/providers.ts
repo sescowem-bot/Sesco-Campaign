@@ -44,10 +44,11 @@ export function providerAdapter(provider:Provider,key:string,transport:typeof fe
       if(provider==='resend') return;
       await request('/senders','POST',{name:senderName(name),email:mailbox(email)});
     },
-    async sendTest(input:{name:string;email:string;replyTo:string;to:string;domain:string;html:string;attempt:string}) {
+    async sendTest(input:{name:string;email:string;replyTo:string;to:string;domain:string;html:string;attempt:string;subject?:string}) {
       if(!matchesDomain(input.email,input.domain)) throw new Error('Sender address must match the verified domain.');
       const name=senderName(input.name),email=mailbox(input.email),to=mailbox(input.to),replyTo=mailbox(input.replyTo);
-      const subject='Sender configuration test';
+      const subject=input.subject??'Sender configuration test';
+      if(!subject.trim()||subject.length>207||/[\r\n]/.test(subject))throw new Error('Invalid test email subject.');
       const body=provider==='resend'?{from:`${name} <${email}>`,to:[to],reply_to:replyTo,subject,html:input.html}:{sender:{name,email},to:[{email:to}],replyTo:{email:replyTo},subject,htmlContent:input.html,headers:{'X-Sesco-Test-ID':input.attempt}};
       const result=await request(provider==='resend'?'/emails':'/smtp/email','POST',body);
       const id=String(result.id??result.messageId??'');

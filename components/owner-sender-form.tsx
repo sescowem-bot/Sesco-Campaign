@@ -1,0 +1,7 @@
+'use client';
+import {useActionState} from 'react';
+import {connectOwnerSender} from '@/app/admin/workspace/actions';
+export function OwnerSenderForm({name,address}:{name:string;address:string}) {
+ const [state,action,pending]=useActionState(connectOwnerSender,{});
+ return <form action={action} className="admin-form"><label>Sender name<input name="name" defaultValue={name} maxLength={100} required/></label><label>From email<input name="email" type="email" placeholder="hello@yourdomain.com" required/></label><label>Reply to email<input name="reply" type="email" required/></label><label>Existing Resend domain ID<input name="domain_id" required placeholder="Domain ID from your Resend dashboard"/></label><p className="muted">Open the verified domain in Resend and copy its ID. This connects your existing domain using the API key already configured on the server. No new domain registration or additional ownership TXT record is needed.</p><label>Business postal address<textarea name="address" defaultValue={address} required minLength={6} maxLength={500}/></label><p className="muted">Connecting this sender enables Resend in the platform. Your provider delivery budgets still apply.</p><button className="btn" disabled={pending}>{pending?'Checking existing sender…':'Connect existing Resend sender'}</button><div aria-live="polite">{state.error&&<p role="alert" className="feedback-error">{state.error}</p>}{state.success&&<p className="feedback-success">{state.success}</p>}</div></form>;
+}
