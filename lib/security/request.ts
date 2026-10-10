@@ -10,5 +10,15 @@ export async function boundedBytes(request:Request,maxBytes:number,timeoutMs=100
 }
 export async function boundedText(request:Request,maxBytes:number){try{return new TextDecoder('utf-8',{fatal:true}).decode(await boundedBytes(request,maxBytes));}catch(e){if(e instanceof RequestBodyError)throw e;throw new RequestBodyError('Invalid UTF-8 payload',400);}}
 export function bodyErrorResponse(error:unknown){return error instanceof RequestBodyError?Response.json({error:error.message},{status:error.status}):null;}
-export function sameOrigin(request:Request){const origin=request.headers.get('origin');return origin===new URL(request.url).origin&&request.headers.get('sec-fetch-site')!=='cross-site';}
+export function sameOrigin(request:Request,env:Record<string,string|undefined>=process.env){
+ const origin=request.headers.get('origin');
+ if(!origin||request.headers.get('sec-fetch-site')==='cross-site')return false;
+ const trusted=new Set([new URL(request.url).origin]);
+ // Trust explicit deployment configuration, never forwarded host headers.
+ for(const value of [env.NEXT_PUBLIC_APP_URL,env.APP_URL,env.VERCEL_URL?`https://${env.VERCEL_URL}`:undefined,env.VERCEL_PROJECT_PRODUCTION_URL?`https://${env.VERCEL_PROJECT_PRODUCTION_URL}`:undefined]){
+  if(!value)continue;
+  try{const url=new URL(value);if(url.protocol==='https:'&&!url.username&&!url.password&&url.pathname==='/'&&!url.search&&!url.hash)trusted.add(url.origin);}catch{/* Invalid settings do not widen access. */}
+ }
+ return trusted.has(origin);
+}
 export function applicationOrigin(env:Record<string,string|undefined>){const current=env.NEXT_PUBLIC_APP_URL,legacy=env.APP_URL;if(current&&legacy&&new URL(current).origin!==new URL(legacy).origin)throw new Error('Application origins disagree');const value=current||legacy;if(!value)throw new Error('Application origin missing');const url=new URL(value);if(url.protocol!=='https:'||url.username||url.password||url.pathname!=='/'||url.search||url.hash)throw new Error('An HTTPS application origin is required');return url.origin;}

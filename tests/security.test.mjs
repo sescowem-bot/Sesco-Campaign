@@ -30,3 +30,12 @@ test('payment signatures authenticate exact bytes and reject tampering',()=>{
 test('production CSP has nonced scripts, no eval and explicit Supabase connections',()=>{
  const csp=contentSecurityPolicy('abcdefgh12345678','https://project.supabase.co');assert.ok(csp.includes("'nonce-abcdefgh12345678'"));assert.ok(csp.includes('wss://project.supabase.co'));assert.ok(!csp.includes('unsafe-eval'));assert.ok(csp.includes("frame-ancestors 'none'"));assert.throws(()=>contentSecurityPolicy("bad'; script-src *",undefined));
 });
+test('proxied browser mutations trust configured HTTPS origins but never forwarded host claims',()=>{
+ const env={NEXT_PUBLIC_APP_URL:'https://sesco-campaign.vercel.app'};
+ const request=origin=>new Request('http://localhost:3000/auth/signout',{headers:{origin,'sec-fetch-site':'same-origin','x-forwarded-host':'evil.example'}});
+ assert.equal(sameOrigin(request('https://sesco-campaign.vercel.app'),env),true);
+ assert.equal(sameOrigin(request('https://evil.example'),env),false);
+ assert.equal(sameOrigin(request('https://preview.vercel.app'),{VERCEL_URL:'preview.vercel.app'}),true);
+ assert.equal(sameOrigin(request('https://evil.example'),{NEXT_PUBLIC_APP_URL:'https://evil.example/path'}),false);
+ assert.equal(sameOrigin(new Request('http://localhost/auth/signout',{headers:{origin:'https://sesco-campaign.vercel.app','sec-fetch-site':'cross-site'}}),env),false);
+});
