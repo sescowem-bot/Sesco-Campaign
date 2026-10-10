@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import {currentAccount} from '@/lib/auth/account';
 import {redirect} from 'next/navigation';
 import {supabaseServer} from '@/lib/supabase/server';
 import {WorkspaceShell} from '@/components/workspace-shell';
@@ -9,7 +10,7 @@ export default async function Admin({searchParams}:{searchParams:Promise<{org?:s
  const {data:owner}=await db.rpc('is_platform_super_admin');if(owner!==true)redirect('/dashboard');
  const {data:companies,error}=await db.from('organizations').select('id,name,status').order('name');
  if(error)return <WorkspaceShell admin title="Campaign control center"><p role="alert">Company workspaces could not be loaded. Please retry.</p><Link className="btn" href="/admin/companies">Company management</Link></WorkspaceShell>;
- const selected=selectOperationCompany(companies||[],org);
+ const account=await currentAccount();const selected=selectOperationCompany(companies||[],org||account?.workspace?.id);
  return <WorkspaceShell admin org={selected?.id} title="Campaign control center"><p className="muted">Manage campaign operations across your company workspaces.</p><div className="actions"><Link className="btn secondary" href="/admin/companies">Manage companies & subscriptions</Link><Link className="btn secondary" href="/dashboard">View all workspaces</Link></div>
  <section className="panel admin-company-picker"><h2>Campaign operations</h2>{companies?.length?<form method="get" action="/admin" className="operation-picker"><label>Company workspace<select name="org" defaultValue={selected?.id||''} required>{!selected&&<option value="">Select a company</option>}{companies.map(c=><option key={c.id} value={c.id}>{c.name} · {c.status}</option>)}</select></label><button className="btn" type="submit">Open workspace</button></form>:<><p>Create your first company to start uploading contacts and designing campaigns.</p><CompanyForm/></>}
  {org&&!selected&&<p role="alert">That company is unavailable. Select a company from the list.</p>}</section>

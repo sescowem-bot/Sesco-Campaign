@@ -1,8 +1,16 @@
 import 'server-only';
 import {cache} from 'react';
+import {cookies} from 'next/headers';
 import {supabaseServer} from '@/lib/supabase/server';
-/** Request-scoped verified identity, never shared across visitors. */
 export const currentAccount=cache(async()=>{
  if(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)return null;
- try{const db=await supabaseServer();const {data:{user},error}=await db.auth.getUser();if(error||!user)return null;const {data:owner}=await db.rpc('is_platform_super_admin');return {id:user.id,admin:owner===true};}catch{return null;}
+ try{
+ const db=await supabaseServer();const {data:{user},error}=await db.auth.getUser();if(error||!user)return null;
+ const {data:owner}=await db.rpc('is_platform_super_admin');
+ const {data:companies}=await db.from('organizations').select('id,name,status').order('name');
+ const preferred=(await cookies()).get('sesco-workspace')?.value;
+ // Organizations are fetched through the signed-in user's RLS-scoped client.
+ const workspace=companies?.find(c=>c.id===preferred)??companies?.find(c=>c.status==='active')??companies?.[0]??null;
+ return {id:user.id,admin:owner===true,workspace};
+ }catch{return null;}
 });
